@@ -20,6 +20,18 @@ public class UserService {
     @Autowired
     private StudentRepository studentRepository;
 
+    /**
+     * Retrieves a paginated list of students.
+     *
+     * @param pageNumber The page number to retrieve (1-based).
+     * @param pageSize The number of students to return per page.
+     * @return A list of students for the specified page.
+     * @throws SQLException If an SQL error occurs while retrieving the students.
+     */
+    public List<Student> getStudents(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        return studentRepository.findAll(pageable).getContent();
+    }
 
     /**
      * Retrieves the total count of students.
