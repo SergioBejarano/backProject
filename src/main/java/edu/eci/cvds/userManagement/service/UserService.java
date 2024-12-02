@@ -1,6 +1,8 @@
 package edu.eci.cvds.userManagement.service;
 
+import edu.eci.cvds.userManagement.model.Responsible;
 import edu.eci.cvds.userManagement.model.Student;
+import edu.eci.cvds.userManagement.repository.ResponsibleRepository;
 import edu.eci.cvds.userManagement.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class UserService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private ResponsibleRepository responsibleRepository;
 
     /**
      * Retrieves a paginated list of students.
@@ -40,6 +45,31 @@ public class UserService {
      */
     public long getTotalStudentCount() {
         return studentRepository.count();
+    }
+
+    /**
+     * Updates the course of a student by their ID.
+     *
+     * @param studentId The ID of the student to update.
+     * @param course    The new course.
+     */
+    @Transactional
+    public void updateStudentCourse(String studentId, String course) {
+        if (studentRepository.existsById(studentId)) {
+            studentRepository.updateStudentCourse(studentId, course);
+        } else {
+            throw new IllegalArgumentException("Student with ID " + studentId + " not found.");
+        }
+    }
+
+
+    /**
+     * Retrieves the total count of responsibles.
+     *
+     * @return The total number of responsibles.
+     */
+    public long getTotalResponsibleCount() {
+        return responsibleRepository.count();
     }
 
 }

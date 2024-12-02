@@ -25,4 +25,13 @@ public interface StudentRepository extends JpaRepository<Student, String> {
      */
     Page<Student> findAll(Pageable pageable);
 
+    /**
+     * Updates the course of a student by their ID.
+     *
+     * @param id         The ID of the student.
+     * @param courseName The new course name.
+     */
+    @Modifying
+    @Query("UPDATE Student s SET s.courseName = :courseName WHERE s.id = :id")
+    void updateStudentCourse(@Param("id") String id, @Param("courseName") String courseName);
 }

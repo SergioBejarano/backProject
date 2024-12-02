@@ -44,4 +44,31 @@ public class UserController {
         return ResponseEntity.ok(totalStudents);
     }
 
+    /**
+     * Endpoint to get the total count of responsibles.
+     *
+     * @return The total number of responsibles wrapped in a ResponseEntity.
+     */
+    @GetMapping("/responsibles/count")
+    public ResponseEntity<Long> getTotalResponsibleCount() {
+        long totalStudents = userService.getTotalResponsibleCount();
+        return ResponseEntity.ok(totalStudents);
+    }
+
+
+    /**
+     * Endpoint to update the course of a student.
+     *
+     * @param studentId The ID of the student to update (String).
+     * @param course    The new course.
+     * @return A response indicating success or failure.
+     */
+    @PutMapping("/students/{id}/course")
+    public ResponseEntity<Void> updateStudentCourse(
+            @PathVariable("id") String studentId,
+            @RequestParam String course) {
+        userService.updateStudentCourse(studentId, course);
+        return ResponseEntity.noContent().build();
+    }
+
 }
