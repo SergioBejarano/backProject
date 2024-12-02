@@ -72,4 +72,53 @@ public class UserService {
         return responsibleRepository.count();
     }
 
+
+    /**
+     * Updates the contact information of a responsible.
+     *
+     * @param docNumber   The document number of the responsible.
+     * @param email       The new email address, if updating.
+     * @param phoneNumber The new phone number, if updating.
+     */
+    @Transactional
+    public void updateResponsibleContactInfo(String docNumber, String email, String phoneNumber) {
+        Responsible responsible = responsibleRepository.findByDocument(docNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Responsible with document number " + docNumber + " not found."));
+
+        if (email != null) responsible.setEmail(email);
+        if (phoneNumber != null) responsible.setPhoneNumber(phoneNumber);
+
+        responsibleRepository.save(responsible);
+    }
+
+    /**
+     * Retrieves a paginated list of responsibles.
+     *
+     * @param pageNumber The page number to retrieve (0-based for Pageable).
+     * @param pageSize   The number of responsibles per page.
+     * @return A paginated list of responsibles.
+     */
+    public ArrayList<Responsible> getAllResponsibles(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        Page<Responsible> page = responsibleRepository.findAll(pageable);
+        return new ArrayList<>(page.getContent());
+    }
+
+    /**
+     * Delete a responsible using number of document
+     *
+     * @param document Of the Economic Responsible
+     */
+    public void deleteByDocument(String document) {
+        responsibleRepository.deleteByDocument(document);
+    }
+
+
+    public void updateStudentStatus(String studentId, boolean status) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+        student.setActive(status);
+        studentRepository.save(student);
+    }
+
 }

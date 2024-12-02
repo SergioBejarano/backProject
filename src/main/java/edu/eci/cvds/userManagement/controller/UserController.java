@@ -1,6 +1,6 @@
 package edu.eci.cvds.userManagement.controller;
 
-//import edu.eci.cvds.userManagement.model.Responsible;
+import edu.eci.cvds.userManagement.model.Responsible;
 import edu.eci.cvds.userManagement.model.Student;
 import edu.eci.cvds.userManagement.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -71,4 +71,75 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint to update the contact information of a responsible.
+     *
+     * @param docNumber   The document number of the responsible.
+     * @param email       The new email address, if updating.
+     * @param phoneNumber The new phone number, if updating.
+     * @return A response indicating success or failure.
+     */
+    @PutMapping("/responsibles/{docNumber}/contact")
+    public ResponseEntity<Void> updateResponsibleContactInfo(
+            @PathVariable("docNumber") String docNumber,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber) {
+        userService.updateResponsibleContactInfo(docNumber, email, phoneNumber);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    /**
+     * Retrieves a paginated list of all responsibles.
+     *
+     * @param pageNumber The page number to retrieve (1-based).
+     * @param pageSize   The number of responsibles to return per page.
+     * @return A ResponseEntity containing a list of responsibles.
+     */
+    @GetMapping("/responsibles")
+    public ResponseEntity<ArrayList<Responsible>> getAllResponsibles(
+            @RequestParam int pageNumber,
+            @RequestParam int pageSize) {
+        try {
+            ArrayList<Responsible> responsibles = userService.getAllResponsibles(pageNumber, pageSize);
+            return ResponseEntity.ok(responsibles);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Eliminate an economic responsible for its ID.
+     *
+     * @param document The number of document of the economic responsible to delete.
+     * @return ResponseEntity with the status of the operation.
+     */
+    @DeleteMapping("delete/{document}")
+    public ResponseEntity<String> deleteResponsible(@PathVariable String document) {
+        try {
+            userService.deleteByDocument(document);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Economic responsible successfully eliminated");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Economic responsible not found");
+        }
+    }
+
+    /**
+     * Endpoint to update the status of a student to false.
+     *
+     * @param studentId The ID of the student to update.
+     * @return A response indicating success or failure.
+     */
+    @PutMapping("/students/{id}/deactivate")
+    public ResponseEntity<String> deactivateStudent(@PathVariable("id") String studentId) {
+        try {
+            userService.updateStudentStatus(studentId, false);
+            return ResponseEntity.ok("Student successfully deactivated.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deactivating the student.");
+        }
+    }
 }
