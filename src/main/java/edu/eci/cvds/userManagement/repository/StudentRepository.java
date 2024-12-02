@@ -17,4 +17,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String> {
 
+    /**
+     * Retrieves a paginated list of students.
+     *
+     * @param pageable The Pageable object containing pagination information.
+     * @return A Page of students.
+     */
+    Page<Student> findAll(Pageable pageable);
+
 }
