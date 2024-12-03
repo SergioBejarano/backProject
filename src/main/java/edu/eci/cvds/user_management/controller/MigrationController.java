@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 @RestController
-@RequestMapping
+@RequestMapping("/migration")
 public class MigrationController {
     private final RegisterService registerService;
     private final FindService findService;
