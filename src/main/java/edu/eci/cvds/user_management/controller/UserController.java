@@ -63,7 +63,7 @@ public class UserController {
      * @param course    The new course.
      * @return A response indicating success or failure.
      */
-    @PutMapping("/students/{id}/course")
+    @PatchMapping("/students/{id}/course")
     public ResponseEntity<Void> updateStudentCourse(
             @PathVariable("id") String studentId,
             @RequestParam String course) {
@@ -79,7 +79,7 @@ public class UserController {
      * @param phoneNumber The new phone number, if updating.
      * @return A response indicating success or failure.
      */
-    @PutMapping("/responsibles/{docNumber}/contact")
+    @PatchMapping("/responsibles/{docNumber}/contact")
     public ResponseEntity<Void> updateResponsibleContactInfo(
             @PathVariable("docNumber") String docNumber,
             @RequestParam(required = false) String email,
@@ -131,7 +131,7 @@ public class UserController {
      * @param studentId The ID of the student to update.
      * @return A response indicating success or failure.
      */
-    @PutMapping("/students/{id}/deactivate")
+    @PatchMapping("/students/{id}/deactivate")
     public ResponseEntity<String> deactivateStudent(@PathVariable("id") String studentId) {
         try {
             userService.updateStudentStatus(studentId, false);

@@ -21,7 +21,7 @@ import java.util.Map;
  * and returns an appropriate response with success or error messages.
  */
 @RestController
-@RequestMapping
+@RequestMapping("/register")
 public class RegisterController {
     private final RegisterService registerService;
     private final JwtService jwtService;
