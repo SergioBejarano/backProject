@@ -7,16 +7,15 @@ import jakarta.persistence.*;
  * The Student class represents a student entity, including information about
  * their academic course, year, responsible person, and the relationship with the responsible person.
  */
-
 @Entity
 @Table(name = "students", schema = "public")
 public class Student{
     @Id
     @Column(name = "id", nullable = false)
     private String id;
-    private String extId;
     private String name;
     private String document;
+    private String extId;
 
     @Column(name = "document_type")
     private String documentType;
@@ -59,18 +58,28 @@ public class Student{
     }
 
     /**
-     * Retrieves the document number of the responsible person for the student.
+     * Retrieves the document of the responsible person associated with the student.
      *
-     * @return The responsible person's document number.
+     * @return The document of the responsible person.
      */
     public String getResponsibleDocument() {
         return responsibleDocument;
     }
 
+    /**
+     * Retrieves the student's document.
+     *
+     * @return The document of the student.
+     */
     public String getDocument() {
         return document;
     }
 
+    /**
+     * Retrieves the type of document associated with the student.
+     *
+     * @return The type of document (e.g., passport, ID card) of the student.
+     */
     public String getDocumentType() {
         return documentType;
     }
@@ -93,10 +102,20 @@ public class Student{
         return name;
     }
 
+    /**
+     * Sets a new external ID for the student.
+     *
+     * @param newExtId The new external ID to be assigned to the student.
+     */
     public void setExtId(String newExtId){
         this.extId=newExtId;
     }
 
+    /**
+     * Retrieves the unique identifier of the student.
+     *
+     * @return The ID of the student as a String.
+     */
     public String getId() {
         return id;
     }
@@ -117,5 +136,14 @@ public class Student{
      */
     public void setActive(boolean status) {
         this.active=status;
+    }
+
+    /**
+     * Retrieves the external ID of the student.
+     *
+     * @return The external ID of the student.
+     */
+    public String getExtId() {
+        return extId;
     }
 }

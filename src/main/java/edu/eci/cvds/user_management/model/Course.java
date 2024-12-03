@@ -78,19 +78,19 @@ public class Course {
             return "Undécimo";
         }
         char firstChar = name.charAt(0);
-        switch (firstChar) {
-            case 'J': return "Jardín";
-            case 'T': return "Transición";
-            case '1': return "Primero";
-            case '2': return "Segundo";
-            case '3': return "Tercero";
-            case '4': return "Cuarto";
-            case '5': return "Quinto";
-            case '6': return "Sexto";
-            case '7': return "Séptimo";
-            case '8': return "Octavo";
-            case '9': return "Noveno";
-            default: return "Unknown";
-        }
+        return switch (firstChar) {
+            case 'J' -> "Jardín";
+            case 'T' -> "Transición";
+            case '1' -> "Primero";
+            case '2' -> "Segundo";
+            case '3' -> "Tercero";
+            case '4' -> "Cuarto";
+            case '5' -> "Quinto";
+            case '6' -> "Sexto";
+            case '7' -> "Séptimo";
+            case '8' -> "Octavo";
+            case '9' -> "Noveno";
+            default -> "Unknown";
+        };
     }
 }
