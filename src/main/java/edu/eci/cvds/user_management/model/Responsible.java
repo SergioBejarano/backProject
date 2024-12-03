@@ -23,19 +23,20 @@ public class Responsible {
 
     @Column(name = "site_document")
     private String siteDocument;
+
     @Column(name = "name")
     private String name;
-
-
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
-
-
     @Column(name = "email")
     private String email;
 
+    /**
+     * Default constructor for JPA.
+     * This is required by the JPA specification.
+     */
     protected Responsible() {
     }
 

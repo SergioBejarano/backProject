@@ -34,4 +34,14 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     @Modifying
     @Query("UPDATE Student s SET s.courseName = :courseName WHERE s.id = :id")
     void updateStudentCourse(@Param("id") String id, @Param("courseName") String courseName);
+
+    /**
+     * Updates the extId and sets active to true for a student by their ID.
+     *
+     * @param id    The ID of the student.
+     * @param extId The new external ID to set.
+     */
+    @Modifying
+    @Query("UPDATE Student s SET s.extId = :extId, s.active = true WHERE s.id = :id")
+    void updateExtIdAndActivate(@Param("id") String id, @Param("extId") String extId);
 }

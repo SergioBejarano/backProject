@@ -12,18 +12,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+    private final ResponsibleRepository responsibleRepository;
 
+    /**
+     * Constructor for UserService.
+     *
+     * @param studentRepository       Repository for managing Student entities.
+     * @param responsibleRepository   Repository for managing Responsible entities.
+     */
     @Autowired
-    private ResponsibleRepository responsibleRepository;
+    public UserService(StudentRepository studentRepository, ResponsibleRepository responsibleRepository) {
+        this.studentRepository = studentRepository;
+        this.responsibleRepository = responsibleRepository;
+    }
 
     /**
      * Retrieves a paginated list of students.
@@ -31,7 +39,6 @@ public class UserService {
      * @param pageNumber The page number to retrieve (1-based).
      * @param pageSize The number of students to return per page.
      * @return A list of students for the specified page.
-     * @throws SQLException If an SQL error occurs while retrieving the students.
      */
     public List<Student> getStudents(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
@@ -64,9 +71,9 @@ public class UserService {
 
 
     /**
-     * Retrieves the total count of responsibles.
+     * Retrieves the total count of responsible.
      *
-     * @return The total number of responsibles.
+     * @return The total number of responsible.
      */
     public long getTotalResponsibleCount() {
         return responsibleRepository.count();
