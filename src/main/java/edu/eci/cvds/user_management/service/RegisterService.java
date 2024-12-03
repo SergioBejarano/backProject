@@ -3,11 +3,9 @@ package edu.eci.cvds.user_management.service;
 import edu.eci.cvds.user_management.model.Course;
 import edu.eci.cvds.user_management.model.Responsible;
 import edu.eci.cvds.user_management.model.Student;
-import edu.eci.cvds.user_management.repository.AdministratorRepository;
 import edu.eci.cvds.user_management.repository.CourseRepository;
 import edu.eci.cvds.user_management.repository.ResponsibleRepository;
 import edu.eci.cvds.user_management.repository.StudentRepository;
-import edu.eci.cvds.user_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +23,9 @@ public class RegisterService {
      * @param responsibleRepository Repository for managing responsible entities.
      * @param studentRepository     Repository for managing student entities.
      * @param courseRepository      Repository for managing course entities.
-     * @param userRepository        Repository for managing user entities (not used here, but injected).
-     * @param administratorRepository Repository for managing administrator entities (not used here, but injected).
      */
     @Autowired
-    public RegisterService(ResponsibleRepository responsibleRepository, StudentRepository studentRepository, CourseRepository courseRepository, UserRepository userRepository, AdministratorRepository administratorRepository) {
+    public RegisterService(ResponsibleRepository responsibleRepository, StudentRepository studentRepository, CourseRepository courseRepository) {
         this.responsibleRepository = responsibleRepository;
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
