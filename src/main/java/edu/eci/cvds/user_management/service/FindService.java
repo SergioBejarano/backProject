@@ -3,9 +3,11 @@ package edu.eci.cvds.user_management.service;
 import edu.eci.cvds.user_management.model.Course;
 import edu.eci.cvds.user_management.model.Grade;
 import edu.eci.cvds.user_management.model.Responsible;
+import edu.eci.cvds.user_management.model.Student;
 import edu.eci.cvds.user_management.repository.CourseRepository;
 import edu.eci.cvds.user_management.repository.GradeRepository;
 import edu.eci.cvds.user_management.repository.ResponsibleRepository;
+import edu.eci.cvds.user_management.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class FindService {
     private final ResponsibleRepository responsibleRepository;
     private final GradeRepository gradeRepository;
     private final CourseRepository courseRepository;
+    private final StudentRepository studentRepository;
 
     /**
      * Constructor for FindService.
@@ -26,11 +29,12 @@ public class FindService {
      * @param courseRepository      Repository for managing Course entities.
      */
     @Autowired
-    public FindService(ResponsibleRepository responsibleRepository, GradeRepository gradeRepository, CourseRepository courseRepository) {
+    public FindService(ResponsibleRepository responsibleRepository, GradeRepository gradeRepository, CourseRepository courseRepository, StudentRepository studentRepository) {
         this.responsibleRepository = responsibleRepository;
 
         this.gradeRepository = gradeRepository;
         this.courseRepository = courseRepository;
+        this.studentRepository = studentRepository;
     }
 
     /**
@@ -73,4 +77,15 @@ public class FindService {
     public List<Course> findCoursesByGradeName(String gradeName){
         return courseRepository.findByGradeName(gradeName);
     }
+
+    /**
+     * Finds a list of Student entities by the name of a course.
+     *
+     * @param courseName The name of the course to search for.
+     * @return A list of Student entities if found, or an empty list if no students are associated with the course.
+     */
+    public List<Student> findStudentsByCourse(String courseName) {
+        return studentRepository.findByCourse(courseName);
+    }
+
 }

@@ -1,9 +1,6 @@
 package edu.eci.cvds.user_management.controller;
 
-import edu.eci.cvds.user_management.model.Course;
-import edu.eci.cvds.user_management.model.Grade;
-import edu.eci.cvds.user_management.model.Responsible;
-import edu.eci.cvds.user_management.model.UserManagementException;
+import edu.eci.cvds.user_management.model.*;
 import edu.eci.cvds.user_management.service.FindService;
 import edu.eci.cvds.user_management.service.JwtService;
 import org.springframework.http.HttpStatus;
@@ -50,7 +47,7 @@ public class FindController {
         } catch (UserManagementException e) {
             return buildResponse(response, 400, "Invalid courses data.", "The course could not be found due to invalid input or token.");
         } catch (Exception e) {
-            return buildResponse(response, 500, "Unexpected error occurred in find: " + e.getMessage(), "An unexpected error occurred during the course search. Please try again later.");
+            return buildResponse(response, 500, "Unexpected error occurred in find : " + e.getMessage(), "An unexpected error occurred during the course search. Please try again later.");
         }
     }
 
@@ -106,7 +103,7 @@ public class FindController {
         } catch (UserManagementException e) {
             return buildResponse(response, 400, "Invalid responsible data.", "The responsible person could not be found due to invalid input or token.");
         } catch (Exception e) {
-            return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred during the search for the person responsible. Please try again later.");
+            return buildResponse(response, 500, "Unexpected error occurred in find: " + e.getMessage(), "An unexpected error occurred during the search for the person responsible. Please try again later.");
         }
     }
 
@@ -135,6 +132,35 @@ public class FindController {
             return buildResponse(response, 400, "Invalid courses data.", "The courses could not be found due to invalid input or token.");
         } catch (Exception e) {
             return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred. Please try again later.");
+        }
+    }
+
+    /**
+     * Endpoint to find a list of students by a course ID.
+     * Validates the JWT token and then queries the service to find the students.
+     * If no students are found for the given course, it throws a UserManagementException with a specific error code.
+     *
+     * @param courseName The ID of the course.
+     * @param token The JWT token sent in the request header.
+     * @return A ResponseEntity containing a JSON object with the list of students for the given course.
+     */
+    @GetMapping("/students/course")
+    public ResponseEntity<Map<String, Object>> findStudentsByCourse(
+            @RequestParam String courseName,
+            @RequestHeader("Authorization") String token) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            jwtService.parseToken(token);
+            List<Student> students = findService.findStudentsByCourse(courseName);
+            if (students == null || students.isEmpty()) {
+                return buildResponse(response, 404, "Students not found.", "No students found for the provided course ID.");
+            }
+            response.put("students", students);
+            return buildResponse(response, 200, "Students found.", "Student list successfully retrieved.");
+        } catch (UserManagementException e) {
+            return buildResponse(response, 400, "Invalid course data.", "The students could not be found due to invalid input or token.");
+        } catch (Exception e) {
+            return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred during the search for students. Please try again later.");
         }
     }
 
