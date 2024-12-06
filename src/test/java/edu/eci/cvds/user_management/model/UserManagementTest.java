@@ -215,4 +215,44 @@ class UserManagementTest {
     }
 
 
+    @Test
+    void testDefSiteDocument_Normalization_BogotaVariations() {
+        Responsible responsible = new Responsible("123", "BOGOTÁ DC", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("BOGOTÁ D.C.", responsible.getSiteDocument());
+
+        responsible = new Responsible("123", "Bogota d.c.", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("BOGOTÁ D.C.", responsible.getSiteDocument());
+
+        responsible = new Responsible("123", "BOGOTA", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("BOGOTÁ D.C.", responsible.getSiteDocument());
+    }
+
+    @Test
+    void testDefSiteDocument_Normalization_Medellin() {
+        Responsible responsible = new Responsible("123", "Medellin", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("MEDELLÍN", responsible.getSiteDocument());
+    }
+
+    @Test
+    void testDefSiteDocument_UnknownValue() {
+        Responsible responsible = new Responsible("123", "Unknown Location", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("UNKNOWN LOCATION", responsible.getSiteDocument());
+        Responsible responsible2 = new Responsible("123", "GUAMO (TOL)", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("GUAMO", responsible2.getSiteDocument());
+        Responsible responsible3 = new Responsible("123", "CHIPAQUE CUNDINAMARCA", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("CHIPAQUE", responsible3.getSiteDocument());
+        Responsible responsible4 = new Responsible("123", "SANTIAGO DE CALI", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("CALI", responsible4.getSiteDocument());
+
+    }
+
+    @Test
+    void testDefSiteDocument_NullOrEmpty() {
+        Responsible responsible = new Responsible("123", null, "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("DESCONOCIDO", responsible.getSiteDocument());
+
+        responsible = new Responsible("123", "", "John Doe", "123456789", "john.doe@example.com");
+        assertEquals("DESCONOCIDO", responsible.getSiteDocument());
+    }
+
 }
