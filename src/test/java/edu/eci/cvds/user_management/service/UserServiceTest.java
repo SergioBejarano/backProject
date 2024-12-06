@@ -118,6 +118,55 @@ class UserServiceTest {
     }
 
 
+    @Test
+    void testGetTotalResponsibleCount() {
+        when(responsibleRepository.count()).thenReturn(3L);
+        long result = userService.getTotalResponsibleCount();
+        assertEquals(3L, result);
+        verify(responsibleRepository).count();
+    }
+
+    @Test
+    void testGetTotalStudentCount() {
+        when(studentRepository.count()).thenReturn(5L);
+        long result = userService.getTotalStudentCount();
+        assertEquals(5L, result);
+        verify(studentRepository).count();
+    }
+
+    @Test
+    void testUpdateStudentStatus() {
+        Student student = new Student("123", "Student1", "123456789", "ID", "Course1", "11111");
+        String studentId = "123";
+        boolean newStatus = false;
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+        userService.updateStudentStatus(studentId, newStatus);
+        verify(studentRepository).save(student);
+    }
+
+    @Test
+    void testUpdateResponsibleContactInf() {
+        String docNumber = "456";
+        String newEmail = "new.email@example.com";
+        String newPhoneNumber = "987654321";
+
+        Responsible responsible = new Responsible(docNumber, "Lucas Lopez", "old.email@example.com", "123456789", "old.phone@example.com");
+
+        when(responsibleRepository.findByDocument(docNumber)).thenReturn(Optional.of(responsible));
+        userService.updateResponsibleContactInfo(docNumber, newEmail, newPhoneNumber);
+        assertEquals(newEmail, responsible.getEmail());
+        assertEquals(newPhoneNumber, responsible.getPhoneNumber());
+        verify(responsibleRepository).save(responsible);
+    }
 
 
+    @Test
+    void testUpdateResponsibleContactInfoResponsibleNotFound() {
+        String docNumber = "999";
+        when(responsibleRepository.findByDocument(docNumber)).thenReturn(Optional.empty());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.updateResponsibleContactInfo(docNumber, "new.email@example.com", "987654321")
+        );
+        assertEquals("Responsible with document number 999 not found.", exception.getMessage());
+    }
 }
