@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -55,4 +56,13 @@ public interface StudentRepository extends JpaRepository<Student, String> {
      */
     @Query("SELECT s FROM Student s WHERE s.courseName = :courseName")
     List<Student> findByCourse(@Param("courseName") String courseName);
+
+    /**
+     * Finds a Student entity by their ID.
+     *
+     * @param id The ID of the student to search for.
+     * @return An Optional containing the Student if found, otherwise empty.
+     */
+    Optional<Student> findById(String id);
+
 }

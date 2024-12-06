@@ -131,7 +131,7 @@ public class FindController {
         } catch (UserManagementException e) {
             return buildResponse(response, 400, "Invalid courses data.", "The courses could not be found due to invalid input or token.");
         } catch (Exception e) {
-            return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred. Please try again later.");
+            return buildResponse(response, 500, "Unexpected error occurred in find of student: " + e.getMessage(), "An unexpected error occurred. Please try again later.");
         }
     }
 
@@ -163,6 +163,42 @@ public class FindController {
             return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred during the search for students. Please try again later.");
         }
     }
+
+    /**
+     * Endpoint to find a student by their ID.
+     * Validates the JWT token and then queries the service to find the student.
+     * Retrieves the student's name and their responsible name and email.
+     *
+     * @param studentId The ID of the student to search for.
+     * @param token The JWT token sent in the request header.
+     * @return A map containing the student's name, the responsible name, and their email.
+     */
+    @GetMapping("/student/{id}")
+    public ResponseEntity<Map<String, Object>> findStudentById(
+            @PathVariable("id") String studentId,
+            @RequestHeader("Authorization") String token) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            jwtService.parseToken(token);
+            Student student = findService.findStudentById(studentId);
+            if (student == null) {
+                return buildResponse(response, 404, "Student not found.", "No student found with the specified ID.");
+            }
+            Responsible responsible = findService.findResponsibleByDocument(student.getResponsibleDocument());
+            if (responsible == null) {
+                return buildResponse(response, 404, "Responsible not found.", "No responsible found for the student.");
+            }
+            response.put("studentName", student.getName());
+            response.put("responsibleName", responsible.getName());
+            response.put("responsibleEmail", responsible.getEmail());
+            return buildResponse(response, 200, "Student found.", "Student and responsible information successfully retrieved.");
+        } catch (UserManagementException e) {
+            return buildResponse(response, 400, "Invalid student data.", "The student could not be found due to invalid input or token.");
+        } catch (Exception e) {
+            return buildResponse(response, 500, "Unexpected error occurred: " + e.getMessage(), "An unexpected error occurred. Please try again later.");
+        }
+    }
+
 
     /**
      * Utility method to build a standardized response.
