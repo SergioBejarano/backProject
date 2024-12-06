@@ -48,10 +48,11 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     void updateExtIdAndActivate(@Param("id") String id, @Param("extId") String extId);
 
     /**
-     * Finds a list of students associated with a specific course.
+     * Finds a list of students associated with a specific course name.
      *
-     * @param course The Course entity to search students for.
-     * @return A list of Student entities associated with the given course.
+     * @param courseName The name of the course to search students for.
+     * @return A list of Student entities associated with the given course name.
      */
-    List<Student> findByCourse(String course);
+    @Query("SELECT s FROM Student s WHERE s.courseName = :courseName")
+    List<Student> findByCourse(@Param("courseName") String courseName);
 }
