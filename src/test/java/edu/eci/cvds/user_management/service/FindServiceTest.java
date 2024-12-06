@@ -6,6 +6,7 @@ import edu.eci.cvds.user_management.model.Responsible;
 import edu.eci.cvds.user_management.repository.CourseRepository;
 import edu.eci.cvds.user_management.repository.GradeRepository;
 import edu.eci.cvds.user_management.repository.ResponsibleRepository;
+import edu.eci.cvds.user_management.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ class FindServiceTest {
 
     @Mock
     private CourseRepository courseRepository;
+
+    @Mock
+    private StudentRepository studentRepository;
 
     @InjectMocks
     private FindService findService;
@@ -121,5 +125,10 @@ class FindServiceTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(courseRepository, times(1)).findByGradeName(gradeName);
+    }
+    @Test
+    void testFindStudentsByCourse() {
+        FindService findService1 = new FindService( responsibleRepository,  gradeRepository, courseRepository,studentRepository);
+        findService1.findStudentsByCourse("Jardin");
     }
 }
