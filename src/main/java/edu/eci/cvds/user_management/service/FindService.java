@@ -79,6 +79,17 @@ public class FindService {
     }
 
     /**
+     * Finds a Student entity by their ID.
+     *
+     * @param studentId The ID of the student to retrieve.
+     * @return The Student entity associated with the given ID, or null if no student is found.
+     */
+    public Student findStudentById(String studentId) {
+        return studentRepository.findById(studentId).orElse(null);
+    }
+
+
+    /**
      * Finds a list of Student entities by the name of a course.
      *
      * @param courseName The name of the course to search for.
