@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 /**
  * StudentRepository is a data access class that manages database interactions for
@@ -44,4 +46,13 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     @Modifying
     @Query("UPDATE Student s SET s.extId = :extId, s.active = true WHERE s.id = :id")
     void updateExtIdAndActivate(@Param("id") String id, @Param("extId") String extId);
+
+    /**
+     * Finds a list of students associated with a specific course name.
+     *
+     * @param courseName The name of the course to search students for.
+     * @return A list of Student entities associated with the given course name.
+     */
+    @Query("SELECT s FROM Student s WHERE s.courseName = :courseName")
+    List<Student> findByCourse(@Param("courseName") String courseName);
 }
