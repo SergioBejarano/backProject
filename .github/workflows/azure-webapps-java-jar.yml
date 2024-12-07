@@ -58,8 +58,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn sonar:sonar \
-            -Dsonar.projectKey=sergiobejarano \
-            -Dsonar.organization=SergioBejarano \
+            -Dsonar.projectKey=SergioBejarano_backProject \
+            -Dsonar.organization=sergiobejarano \
             -Dsonar.host.url=https://sonarcloud.io
 
   test:
