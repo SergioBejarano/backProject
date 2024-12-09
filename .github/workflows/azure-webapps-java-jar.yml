@@ -1,14 +1,14 @@
-name: Build, Test, Analyze, and Deploy Java App to Azure
+name: Deploy Java App to Azure Web App
 
 on:
   push:
     branches:
-      - main
+      - main 
 
 env:
-  AZURE_WEBAPP_NAME: 'userManagementBibliosoft'
-  AZURE_WEBAPP_PACKAGE_PATH: 'target/*.jar'
-  JAVA_VERSION: '21'
+  AZURE_WEBAPP_NAME: 'userManagementBibliosoft'  
+  AZURE_WEBAPP_PACKAGE_PATH: 'target/*.jar'  
+  JAVA_VERSION: '21' 
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
+          distribution: 'temurin' 
 
       - name: 'Build with Maven'
         run: mvn clean package
@@ -33,38 +33,9 @@ jobs:
           name: app-jar
           path: target/*.jar
 
-  analyze:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v4
-
-      - name: 'Set up JDK ${{ env.JAVA_VERSION }}'
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-
-      - name: 'Cache SonarCloud packages'
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-
-      - name: 'Run SonarCloud analysis'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=SergioBejarano_backProject \
-            -Dsonar.organization=sergiobejarano \
-            -Dsonar.host.url=https://sonarcloud.io
-
   test:
     runs-on: ubuntu-latest
-    needs: [build, analyze]
+    needs: build
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -91,31 +62,32 @@ jobs:
           path: target/surefire-reports/
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: test
+      runs-on: ubuntu-latest
+  
+      needs: test
+  
+      steps:
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@v4
 
-    steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v4
+        - name: 'Set up JDK ${{ env.JAVA_VERSION }}'
+          uses: actions/setup-java@v4
+          with:
+            java-version: ${{ env.JAVA_VERSION }}
+            distribution: 'temurin'
 
-      - name: 'Set up JDK ${{ env.JAVA_VERSION }}'
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
+        - name: 'Build with Maven'
+          run: mvn package
+  
+        - name: 'Deploy to Azure Web App'
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: ${{ env.AZURE_WEBAPP_NAME }}
+            publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+            package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-      - name: 'Build with Maven'
-        run: mvn package
-
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
-      - name: 'Upload build artifact'
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-jar
-          path: target/*.jar
+        - name: 'Upload build artifact'
+          uses: actions/upload-artifact@v3
+          with:
+            name: app-jar
+            path: target/*.jar
