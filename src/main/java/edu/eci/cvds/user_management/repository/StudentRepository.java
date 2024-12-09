@@ -1,6 +1,7 @@
 package edu.eci.cvds.user_management.repository;
 import edu.eci.cvds.user_management.model.Student;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +27,8 @@ public interface StudentRepository extends JpaRepository<Student, String> {
      * @param pageable The Pageable object containing pagination information.
      * @return A Page of students.
      */
-    Page<Student> findAll(Pageable pageable);
+    @NonNull
+    Page<Student> findAll(@NonNull Pageable pageable);
 
     /**
      * Updates the course of a student by their ID.
@@ -63,6 +65,7 @@ public interface StudentRepository extends JpaRepository<Student, String> {
      * @param id The ID of the student to search for.
      * @return An Optional containing the Student if found, otherwise empty.
      */
-    Optional<Student> findById(String id);
+    @NonNull
+    Optional<Student> findById(@NonNull String id);
 
 }

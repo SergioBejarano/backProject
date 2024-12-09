@@ -1,11 +1,13 @@
 package edu.eci.cvds.user_management.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 /**
  * Represents a course entity in the system. Each course is identified by its name and has an associated grade name,
  * which is automatically determined based on the course's name.
  */
+@Getter
 @Entity
 @Table(name = "courses", schema = "public")
 public class Course {
@@ -15,10 +17,6 @@ public class Course {
      */
     @Id
     private String name;
-
-    /**
-     * The grade name associated with the course, derived from the course's name.
-     */
     @Column(name = "grade_name")
     private String gradeName;
 
@@ -39,19 +37,6 @@ public class Course {
     public Course() {
     }
 
-    /**
-     * Gets the grade name associated with the course.
-     *
-     * @return the grade name.
-     */
-    public String getGradeName() {
-        return gradeName;
-    }
-
-
-    public String getName() {
-        return name;
-    }
 
     /**
      * Determines the grade name based on the course's name.
