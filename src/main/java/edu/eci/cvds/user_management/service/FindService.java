@@ -31,7 +31,6 @@ public class FindService {
     @Autowired
     public FindService(ResponsibleRepository responsibleRepository, GradeRepository gradeRepository, CourseRepository courseRepository, StudentRepository studentRepository) {
         this.responsibleRepository = responsibleRepository;
-
         this.gradeRepository = gradeRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
