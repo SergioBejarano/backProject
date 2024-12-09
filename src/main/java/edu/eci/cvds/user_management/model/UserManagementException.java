@@ -7,7 +7,6 @@ package edu.eci.cvds.user_management.model;
  */
 public class UserManagementException extends Exception {
 
-    public static final String USER_NOT_FOUND = "User not found with the given ID.";
     public static final String INVALID_USER_DATA = "The provided user data is invalid.";
     public static final String DUPLICATE_USER = "A user with the given information already exists.";
     public static final String DATABASE_CONNECTION_ERROR = "Unable to connect to the database.";
@@ -24,6 +23,9 @@ public class UserManagementException extends Exception {
     public static final String GRADE_NOT_FOUND = "Grade not found with the given name.";
     public static final String GRADE_NAME_REQUIRED = "The grade name is required.";
     public static final String COURSE_NOT_FOUND = "Course not found with the given name";
+    public static final String USER_NOT_FOUND ="THE USER WAS NOT FOUND";
+    public static final String ROLE_NOT_FOUND = "THE ROLE WAS NOT FOUND IN THE PAYLOAD OF THE TOKEN JWT";
+
 
     /**
      * Constructs a new UserManagementException with a specified error message.
@@ -44,4 +46,3 @@ public class UserManagementException extends Exception {
         super(message, cause);
     }
 }
-
