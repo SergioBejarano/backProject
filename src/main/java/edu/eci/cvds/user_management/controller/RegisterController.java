@@ -1,7 +1,6 @@
 package edu.eci.cvds.user_management.controller;
 
 import edu.eci.cvds.user_management.model.Course;
-import edu.eci.cvds.user_management.service.JwtService;
 import edu.eci.cvds.user_management.service.RegisterService;
 import edu.eci.cvds.user_management.model.Responsible;
 import edu.eci.cvds.user_management.model.Student;
@@ -24,33 +23,27 @@ import java.util.Map;
 @RequestMapping("/register")
 public class RegisterController {
     private final RegisterService registerService;
-    private final JwtService jwtService;
 
     /**
      * Constructor for RegisterController.
      *
      * @param registerService Service for handling registration operations.
-     * @param jwtService      Service for JWT validation and processing.
      */
-    public RegisterController(RegisterService registerService, JwtService jwtService) {
+    public RegisterController(RegisterService registerService) {
         this.registerService = registerService;
-        this.jwtService = jwtService;
     }
 
     /**
      * Endpoint to register a new student.
      *
-     * @param token      The authorization token from the request header.
      * @param studentData The student details provided in the request body.
      * @return A ResponseEntity containing the operation's status, developer message, and user message.
      */
     @PostMapping("/students")
     public ResponseEntity<Map<String, Object>> registerStudent(
-            @RequestHeader("Authorization") String token,
             @RequestBody Student studentData) {
         Map<String, Object> response = new HashMap<>();
         try {
-            jwtService.parseToken(token);
             boolean isRegistered = registerService.registerStudent(studentData).isPresent();
             if (isRegistered) {
                 return buildResponse(response, 200, "Student registration successful.", "The student has been registered successfully.");
@@ -65,17 +58,14 @@ public class RegisterController {
     /**
      * Endpoint to register a new responsible person.
      *
-     * @param token         The authorization token from the request header.
      * @param newResponsible The responsible details provided in the request body.
      * @return A ResponseEntity containing the operation's status, developer message, and user message.
      */
     @PostMapping("/responsible")
     public ResponseEntity<Map<String, Object>> registerResponsible(
-            @RequestHeader("Authorization") String token,
             @RequestBody Responsible newResponsible) {
         Map<String, Object> response = new HashMap<>();
         try {
-            jwtService.parseToken(token);
             boolean isRegistered = registerService.registerResponsible(newResponsible).isPresent();
             if (isRegistered) {
                 return buildResponse(response, 200, "Responsible registration successful.", "The responsible has been registered successfully.");
@@ -90,17 +80,14 @@ public class RegisterController {
     /**
      * Endpoint to create a new course.
      *
-     * @param token    The authorization token from the request header.
      * @param newCourse The course details provided in the request body.
      * @return A ResponseEntity containing the operation's status, developer message, and user message.
      */
     @PostMapping("/courses")
     public ResponseEntity<Map<String, Object>> createCourse(
-            @RequestHeader("Authorization") String token,
             @RequestBody Course newCourse) {
         Map<String, Object> response = new HashMap<>();
         try {
-            jwtService.parseToken(token);
             registerService.createCourse(newCourse);
             return buildResponse(response, 200, "Course creation successful.", "The course has been created successfully.");
         } catch (Exception e) {
@@ -111,17 +98,14 @@ public class RegisterController {
     /**
      * Endpoint to assign a new external ID to a student and activate them.
      *
-     * @param token       The authorization token from the request header.
      * @param requestData A map containing the student's ID ("studentId") and the new external ID ("newExtId").
      * @return A ResponseEntity with the operation's status, message, and details.
      */
     @PostMapping("/assignExtIdStudent")
     public ResponseEntity<Map<String, Object>> assignExtIdStudent(
-            @RequestHeader("Authorization") String token,
             @RequestBody Map<String, String> requestData) {
         Map<String, Object> response = new HashMap<>();
         try {
-            jwtService.parseToken(token);
             String studentId = requestData.get("studentId");
             String newExtId = requestData.get("newExtId");
             if (studentId == null || newExtId == null) {
