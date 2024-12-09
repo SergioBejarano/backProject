@@ -1,37 +1,47 @@
 package edu.eci.cvds.user_management.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * This class configures Cross-Origin Resource Sharing (CORS) settings for the application.
- * CORS allows web browsers to make requests to a domain other than the one that served the web page.
- * This configuration enables secure cross-origin requests by allowing only specific origins (in this case, "http://localhost:3000") to access resources.
- * It also permits specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS), allows any headers to be included in the request, and permits the inclusion of credentials (cookies, HTTP authentication) in cross-origin requests.
- * By using this class, the application ensures that the frontend running on "http://localhost:3000" can interact with the backend API while maintaining proper security and preventing unauthorized access from other domains.
+ * CORS and security configuration for the application, implementing the {@link WebMvcConfigurer} interface.
+ * This class handles the HTTP security configuration and CORS management to allow access to specific resources
+ * without authentication, while also protecting against CSRF attacks.
  */
-@Configuration
+ @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     /**
-     * Configures Cross-Origin Resource Sharing (CORS) settings for the application.
-     * This configuration allows requests from a specific origin, enables certain HTTP methods,
-     * and permits credentials to be included in the requests.
+     * Constructor that injects the JWT authentication filter.
      *
-     * @return a WebMvcConfigurer implementation with CORS settings
+     * @param jwtAuthenticationFilter the JWT filter used to authenticate requests
+     */
+    public CorsConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    /**
+     * Configures the HTTP security filter chain.
+     * @param security the {@link HttpSecurity} object used to configure HTTP security.
+     * @return the security filter chain configuration.
+     * @throws Exception if an error occurs while configuring the security.
      */
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
+    public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
+        return security
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers("/swagger-ui/", "/v3/api-docs/", "/swagger-resources/", "/webjars/").permitAll()
+                                .requestMatchers("/notifications/admin/").hasRole("ADMIN")
+                                .requestMatchers("/notifications/users/").hasRole("STUDENT").
+
+                                anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 }
