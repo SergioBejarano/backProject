@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -24,12 +23,20 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final ApiClient apiClient;
+
+    public JwtAuthenticationFilter(ApiClient apiClient) {
+        this.apiClient = apiClient;
+    }
+
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+
         final Logger logger = LoggerFactory.getLogger(this.getClass());
         final String token = getTokenFromRequest(request);
 
@@ -42,10 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
 
                     UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(
-                            "12335",
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                    );
+                            "12335", null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
                     userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(userToken);
 
@@ -54,14 +58,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     throw new UserManagementException(UserManagementException.INVALID_TOKEN);
                 }
             } catch (UserManagementException e) {
-                logger.error("Authentication failed during token validation. Request URL: {}. Error: {}",
+                logger.error("Authentication failed. URL: {}. Error: {}",
                         request.getRequestURL(), e.getMessage(), e);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Authentication failed: " + e.getMessage());
                 return;
             }
-
-
         }
 
         filterChain.doFilter(request, response);
@@ -69,11 +71,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")){
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
         return null;
     }
+
     private String decodePayload(String token) throws UserManagementException {
         try {
             String[] parts = token.split("\\.");
@@ -82,7 +85,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
-
             if (payload.contains("\"role\":")) {
                 int startIndex = payload.indexOf("\"role\":") + 7;
                 int endIndex = payload.indexOf("\"", startIndex + 1);
@@ -90,11 +92,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 throw new UserManagementException(UserManagementException.ROLE_NOT_FOUND);
             }
-        } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
-            throw new UserManagementException("Invalid token structure.", e);
         } catch (Exception e) {
-            throw new UserManagementException("An error occurred while decoding the token payload.", e);
+            throw new UserManagementException("Error decoding token payload.", e);
         }
     }
-
 }

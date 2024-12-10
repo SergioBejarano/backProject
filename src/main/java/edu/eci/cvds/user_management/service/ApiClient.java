@@ -1,7 +1,6 @@
 package edu.eci.cvds.user_management.service;
 
 import edu.eci.cvds.user_management.model.UserManagementException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,10 +11,13 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class ApiClient {
 
     private final RestClient restClient;
+
+    public ApiClient(RestClient restClient) {
+        this.restClient = restClient;
+    }
 
     @Value("${API_AUTH_URL}")
     private String apiAuthUrl;
@@ -67,8 +69,5 @@ public class ApiClient {
         } else {
             throw new UserManagementException("Unexpected error occurred: " + statusCode.getReasonPhrase());
         }
-    }
-    public ApiClient() {
-        this.restClient = null;
     }
 }
