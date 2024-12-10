@@ -2,6 +2,7 @@ package edu.eci.cvds.user_management.repository;
 
 import edu.eci.cvds.user_management.model.Responsible;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,12 +30,13 @@ public interface ResponsibleRepository extends JpaRepository<Responsible, String
 
 
     /**
-     * Finds all responsibles with pagination.
+     * Finds all responsible with pagination.
      *
      * @param pageable The pagination information.
-     * @return A paginated list of responsibles.
+     * @return A paginated list of responsible.
      */
-    Page<Responsible> findAll(Pageable pageable);
+    @NonNull
+    Page<Responsible> findAll(@NonNull Pageable pageable);
 
     /**
      * Deletes a Responsible by document.
