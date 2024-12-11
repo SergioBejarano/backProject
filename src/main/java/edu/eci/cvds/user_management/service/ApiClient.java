@@ -2,6 +2,7 @@ package edu.eci.cvds.user_management.service;
 
 import edu.eci.cvds.user_management.model.UserManagementException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,27 +34,32 @@ public class ApiClient {
         try {
             String uri = String.format("%s/auth/session", apiAuthUrl);
             assert restClient != null;
-            ResponseEntity<?> response = restClient.get()
+
+            ResponseEntity<Map<String, Object>> response = restClient.get()
                     .uri(uri)
                     .header("Authorization", "Bearer " + token)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
-                    .toEntity(Object.class);
+                    .toEntity(new ParameterizedTypeReference<>() {});
+
             if (response.getStatusCode().is2xxSuccessful()) {
-                Object responseBody = response.getBody();
-                if (responseBody instanceof Map<?, ?> responseMap) {
-                    String role = (String) responseMap.get("role");
-                    return "Administrator".equals(role);
+                Map<?, ?> responseBody = response.getBody();
+                if (responseBody != null && responseBody.containsKey("data")) {
+                    Object data = responseBody.get("data");
+                    if (data instanceof Map<?, ?> dataMap) {
+                        String role = (String) dataMap.get("role");
+                        return "administrator".equals(role);
+                    }
                 }
                 return false;
             }
+
             handleErrorResponse((HttpStatus) response.getStatusCode());
             return false;
         } catch (Exception e) {
             throw new UserManagementException("An error occurred while validating the token.", e);
         }
     }
-
 
     /**
      * Handle error responses by throwing a UserManagementException with an appropriate message.
