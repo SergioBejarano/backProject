@@ -30,12 +30,7 @@ public class CorsConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        .requestMatchers("/notifications/admin/").hasRole("ADMIN")
-                        .requestMatchers("/notifications/users/").hasRole("STUDENT")
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(request -> request.anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

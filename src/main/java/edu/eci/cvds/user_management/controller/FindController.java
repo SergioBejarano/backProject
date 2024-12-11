@@ -37,6 +37,7 @@ public class FindController {
             if (course == null) {
                 return buildResponse(response, 404, "Course not found.", "The course with the specified name was not found.");
             }
+            response.put("course", course);
             return buildResponse(response, 200, "Course found.", "Course details successfully retrieved.");
         } catch (Exception e) {
             return buildResponse(response, 500, "Unexpected error occurred in find : " + e.getMessage(), "An unexpected error occurred during the course search. Please try again later.");
@@ -60,6 +61,7 @@ public class FindController {
             if (grade == null) {
                 return buildResponse(response, 404, "Grade not found.", "The grade with the specified name was not found.");
             }
+            response.put("grade", grade);
             return buildResponse(response, 200, "Grade found.", "Grade details successfully retrieved.");
         } catch (Exception e) {
             return buildResponse(response, 500, "Unexpected error occurred in find: " + e.getMessage(), "An unexpected error occurred during the degree search. Please try again later.");
@@ -83,6 +85,7 @@ public class FindController {
             if (responsible == null) {
                 return buildResponse(response, 404, "Responsible not found.", "No responsible person found with the provided document number.");
             }
+            response.put("responsible", responsible);
             return buildResponse(response, 200, "Responsible found.", "Responsible details successfully retrieved.");
         } catch (Exception e) {
             return buildResponse(response, 500, "Unexpected error occurred in find: " + e.getMessage(), "An unexpected error occurred during the search for the person responsible. Please try again later.");
@@ -106,6 +109,7 @@ public class FindController {
             if (courses == null || courses.isEmpty()) {
                 return buildResponse(response, 404, "Courses not found.", "No courses found for the specified grade.");
             }
+            response.put("courses", courses);
             return buildResponse(response, 200, "Courses found.", "Courses related to the grade successfully retrieved.");
         } catch (Exception e) {
             return buildResponse(response, 500, "Unexpected error occurred in find of student: " + e.getMessage(), "An unexpected error occurred. Please try again later.");
