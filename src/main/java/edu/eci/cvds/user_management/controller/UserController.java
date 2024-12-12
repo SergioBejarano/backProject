@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -17,7 +19,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
+    
     /**
      * Endpoint to retrieve a paginated list of students.
      *
@@ -26,11 +28,15 @@ public class UserController {
      * @return A list of students for the specified page.
      */
     @GetMapping("/students")
-    public ResponseEntity<List<Student>> getStudents(
+    public ResponseEntity<Map<String, Object>> getStudents(
             @RequestParam int pageNumber,
             @RequestParam int pageSize) {
-        List<Student> students = userService.getStudents(pageNumber, pageSize);
-        return new ResponseEntity<>(students, HttpStatus.OK);
+        try {
+            List<Student> students = userService.getStudents(pageNumber, pageSize);
+            return buildResponse(students, HttpStatus.OK.value(), "Students retrieved successfully.", "Page retrieved: " + pageNumber);
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error retrieving students.", e.getMessage());
+        }
     }
 
     /**
@@ -39,9 +45,13 @@ public class UserController {
      * @return The total number of students wrapped in a ResponseEntity.
      */
     @GetMapping("/students/count")
-    public ResponseEntity<Long> getTotalStudentCount() {
-        long totalStudents = userService.getTotalStudentCount();
-        return ResponseEntity.ok(totalStudents);
+    public ResponseEntity<Map<String, Object>> getTotalStudentCount() {
+        try {
+            long totalStudents = userService.getTotalStudentCount();
+            return buildResponse(totalStudents, HttpStatus.OK.value(), "Total student count retrieved successfully.", "");
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error retrieving total student count.", e.getMessage());
+        }
     }
 
     /**
@@ -50,9 +60,13 @@ public class UserController {
      * @return The total number of responsibles wrapped in a ResponseEntity.
      */
     @GetMapping("/responsibles/count")
-    public ResponseEntity<Long> getTotalResponsibleCount() {
-        long totalStudents = userService.getTotalResponsibleCount();
-        return ResponseEntity.ok(totalStudents);
+    public ResponseEntity<Map<String, Object>> getTotalResponsibleCount() {
+        try {
+            long totalResponsibles = userService.getTotalResponsibleCount();
+            return buildResponse(totalResponsibles, HttpStatus.OK.value(), "Total responsible count retrieved successfully.", "");
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error retrieving total responsible count.", e.getMessage());
+        }
     }
 
 
@@ -64,11 +78,15 @@ public class UserController {
      * @return A response indicating success or failure.
      */
     @PatchMapping("/students/{id}/course")
-    public ResponseEntity<Void> updateStudentCourse(
-            @PathVariable("id") String studentId,
-            @RequestParam String course) {
-        userService.updateStudentCourse(studentId, course);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Map<String, Object>> updateStudentCourse(@PathVariable("id") String studentId, @RequestParam String course) {
+        try {
+            userService.updateStudentCourse(studentId, course);
+            return buildResponse(null, HttpStatus.NO_CONTENT.value(), "Student course updated successfully.", "");
+        } catch (EntityNotFoundException e) {
+            return buildResponse(null, HttpStatus.NOT_FOUND.value(), "Student not found.", e.getMessage());
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error updating student course.", e.getMessage());
+        }
     }
 
     /**
@@ -80,12 +98,18 @@ public class UserController {
      * @return A response indicating success or failure.
      */
     @PatchMapping("/responsibles/{docNumber}/contact")
-    public ResponseEntity<Void> updateResponsibleContactInfo(
+    public ResponseEntity<Map<String, Object>> updateResponsibleContactInfo(
             @PathVariable("docNumber") String docNumber,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber) {
-        userService.updateResponsibleContactInfo(docNumber, email, phoneNumber);
-        return ResponseEntity.noContent().build();
+        try {
+            userService.updateResponsibleContactInfo(docNumber, email, phoneNumber);
+            return buildResponse(null, HttpStatus.NO_CONTENT.value(), "Responsible contact info updated successfully.", "");
+        } catch (EntityNotFoundException e) {
+            return buildResponse(null, HttpStatus.NOT_FOUND.value(), "Responsible not found.", e.getMessage());
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error updating responsible contact info.", e.getMessage());
+        }
     }
 
 
@@ -97,15 +121,14 @@ public class UserController {
      * @return A ResponseEntity containing a list of responsibles.
      */
     @GetMapping("/responsibles")
-    public ResponseEntity<ArrayList<Responsible>> getAllResponsibles(
+    public ResponseEntity<Map<String, Object>> getAllResponsibles(
             @RequestParam int pageNumber,
             @RequestParam int pageSize) {
         try {
             ArrayList<Responsible> responsibles = userService.getAllResponsibles(pageNumber, pageSize);
-            return ResponseEntity.ok(responsibles);
+            return buildResponse(responsibles, HttpStatus.OK.value(), "Responsibles retrieved successfully.", "Page retrieved: " + pageNumber);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error retrieving responsibles.", e.getMessage());
         }
     }
 
@@ -116,12 +139,14 @@ public class UserController {
      * @return ResponseEntity with the status of the operation.
      */
     @DeleteMapping("delete/{document}")
-    public ResponseEntity<String> deleteResponsible(@PathVariable String document) {
+    public ResponseEntity<Map<String, Object>> deleteResponsible(@PathVariable String document) {
         try {
             userService.deleteByDocument(document);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Economic responsible successfully eliminated");
+            return buildResponse(null, HttpStatus.NO_CONTENT.value(), "Responsible successfully deleted.", "");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Economic responsible not found");
+            return buildResponse(null, HttpStatus.NOT_FOUND.value(), "Responsible not found.", e.getMessage());
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error deleting responsible.", e.getMessage());
         }
     }
 
@@ -132,14 +157,33 @@ public class UserController {
      * @return A response indicating success or failure.
      */
     @PatchMapping("/students/{id}/deactivate")
-    public ResponseEntity<String> deactivateStudent(@PathVariable("id") String studentId) {
+    public ResponseEntity<Map<String, Object>> deactivateStudent(@PathVariable("id") String studentId) {
         try {
             userService.updateStudentStatus(studentId, false);
-            return ResponseEntity.ok("Student successfully deactivated.");
+            return buildResponse(null, HttpStatus.OK.value(), "Student successfully deactivated.", "");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+            return buildResponse(null, HttpStatus.NOT_FOUND.value(), "Student not found.", e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deactivating the student.");
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error deactivating student.", e.getMessage());
         }
+    }
+
+    /**
+     * Builds a response entity with the given data, status, message, and details.
+     * @param data The response data. Can be any object and is optional.
+     * @param status The HTTP status code for the response.
+     * @param message A message describing the response.
+     * @param details Additional details about the response.
+     * @return A ResponseEntity containing a map with the provided information.
+     */
+    private ResponseEntity<Map<String, Object>> buildResponse(Object data, int status, String message, String details) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", status);
+        response.put("message", message);
+        response.put("details", details);
+        if (data != null) {
+            response.put("data", data);
+        }
+        return ResponseEntity.status(status).body(response);
     }
 }
