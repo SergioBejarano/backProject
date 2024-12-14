@@ -48,7 +48,7 @@ public class ApiClient {
                     Object data = responseBody.get("data");
                     if (data instanceof Map<?, ?> dataMap) {
                         String role = (String) dataMap.get("role");
-                        return "administrator".equals(role);
+                        return "admin".equals(role);
                     }
                 }
                 return false;
